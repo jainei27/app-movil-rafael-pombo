@@ -8,7 +8,7 @@ export const useAuth = (navigation) => {
     const [isBiometricSupported, setIsBiometricSupported] = useState(false);
     const [isBiometricEnrolled, setIsBiometricEnrolled] = useState(false);
     const [isBiometricActive, setIsBiometricActive] = useState(false);
-    
+
     const [alertConfig, setAlertConfig] = useState({
         visible: false,
         type: 'success',
@@ -29,7 +29,7 @@ export const useAuth = (navigation) => {
         const hasHardware = await LocalAuthentication.hasHardwareAsync();
         const isEnrolled = await LocalAuthentication.isEnrolledAsync();
         const isActive = await SecureStore.getItemAsync('isBiometricActive');
-        
+
         setIsBiometricSupported(hasHardware);
         setIsBiometricEnrolled(isEnrolled);
         setIsBiometricActive(isActive === 'true');
@@ -44,8 +44,6 @@ export const useAuth = (navigation) => {
     const handleLogin = async () => {
         if (username.toLowerCase() === 'juan' && password === '123') {
             await saveSessionToken(username.toLowerCase());
-            
-            // Si el hardware es compatible pero no está activo, preguntamos
             if (isBiometricSupported && isBiometricEnrolled && !isBiometricActive) {
                 const hasAsked = await SecureStore.getItemAsync('hasAskedBiometrics');
                 if (!hasAsked) {
@@ -115,7 +113,7 @@ export const useAuth = (navigation) => {
                     message: 'Ingresando mediante biometría...',
                     showCancel: false
                 });
-                
+
                 setTimeout(() => {
                     closeAlert();
                     navigation.replace('SelectChild');

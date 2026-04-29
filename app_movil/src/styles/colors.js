@@ -1,7 +1,7 @@
 export default {
-    primary: '#D32F2F', // Administrative red
-    secondary: '#B71C1C', // Darker red for gradients
-    background: '#F8F9FA', // Light grey background
+    primary: '#D32F2F',
+    secondary: '#B71C1C',
+    background: '#F8F9FA',
     white: '#FFFFFF',
     text: '#333333',
     textSecondary: 'rgba(255, 255, 255, 0.8)',

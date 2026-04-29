@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     StyleSheet,
     View,
@@ -11,15 +11,68 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import MenuCard from '../components/MenuCard';
 import CustomAlert from '../components/CustomAlert';
-import { studentInfo, generalAverage } from '../models/subjectsData';
+import GradeAlert from '../components/GradeAlert';
+import LowGradeCard from '../components/LowGradeCard';
+import { useSession } from '../context/SessionContext';
+import { studentInfo, generalAverage, subjects } from '../models/subjectsData';
+import { getConsolidatedLowGrades } from '../utils/gradeUtils';
 import colors from '../styles/colors';
 
 const { width } = Dimensions.get('window');
 
-const DashboardScreen = ({ navigation }) => {
+const DashboardScreen = ({ navigation, route }) => {
+    const { childId } = route.params || {};
+    const { seenAlerts, markAsSeen } = useSession();
+    
     const [logoutAlertVisible, setLogoutAlertVisible] = useState(false);
+    
+    // Low grades logic
+    const [lowGrades, setLowGrades] = useState([]); // All low grades for cards
+    const [currentAlertIndex, setCurrentAlertIndex] = useState(0);
+    const [gradeAlertVisible, setGradeAlertVisible] = useState(false);
+
+    useFocusEffect(
+        useCallback(() => {
+            const consolidated = getConsolidatedLowGrades(subjects);
+            setLowGrades(consolidated);
+
+            // Modal logic: Only show if not seen in this session
+            if (childId && !seenAlerts[childId]) {
+                if (consolidated.length > 0) {
+                    setGradeAlertVisible(true);
+                } else {
+                    markAsSeen(childId);
+                }
+            }
+        }, [childId, seenAlerts])
+    );
+
+    const handleNextAlert = () => {
+        if (currentAlertIndex < lowGrades.length - 1) {
+            setCurrentAlertIndex(currentAlertIndex + 1);
+        } else {
+            handleCloseAlerts();
+        }
+    };
+
+    const handleCloseAlerts = () => {
+        setGradeAlertVisible(false);
+        if (childId) {
+            markAsSeen(childId);
+        }
+    };
+
+    const handleViewSubject = (subjectId) => {
+        setGradeAlertVisible(false);
+        const subject = subjects.find(s => s.id === subjectId);
+        if (childId) {
+            markAsSeen(childId);
+        }
+        navigation.navigate('SubjectDetail', { subject });
+    };
 
     const handleLogoutConfirm = () => {
         setLogoutAlertVisible(false);
@@ -124,7 +177,32 @@ const DashboardScreen = ({ navigation }) => {
                         <Text style={styles.announcementText}>Entrega de boletines: Próximo viernes.</Text>
                     </View>
                 </View>
+
+                {lowGrades.length > 0 && (
+                    <View style={styles.lowGradesSection}>
+                        {lowGrades.map((alert) => (
+                            <LowGradeCard
+                                key={alert.subjectId}
+                                subjectName={alert.subjectName}
+                                grade={alert.grade}
+                                onPress={() => handleViewSubject(alert.subjectId)}
+                            />
+                        ))}
+                    </View>
+                )}
             </ScrollView>
+
+            <GradeAlert
+                visible={gradeAlertVisible}
+                subjectName={lowGrades[currentAlertIndex]?.subjectName}
+                grade={lowGrades[currentAlertIndex]?.grade || 0}
+                activityName={lowGrades[currentAlertIndex]?.activity}
+                onView={() => handleViewSubject(lowGrades[currentAlertIndex]?.subjectId)}
+                onNext={handleNextAlert}
+                onCancel={handleCloseAlerts}
+                isLast={currentAlertIndex === lowGrades.length - 1}
+                totalAlerts={lowGrades.length}
+            />
 
             <CustomAlert
                 visible={logoutAlertVisible}
@@ -272,6 +350,9 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: colors.text,
         marginTop: 2,
+    },
+    lowGradesSection: {
+        marginTop: 15,
     },
 });
 

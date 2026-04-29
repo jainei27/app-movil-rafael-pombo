@@ -1,5 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SessionProvider } from '../context/SessionContext';
+import { NotificacionesProvider } from '../context/NotificacionesContext';
 import LoginScreen from '../screens/LoginScreen';
 import DashboardScreen from '../screens/DashboardScreen';
 import HomeScreen from '../screens/HomeScreen';
@@ -14,22 +16,26 @@ const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
     return (
-        <Stack.Navigator
-            initialRouteName="Login"
-            screenOptions={{
-                headerShown: false,
-            }}
-        >
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="SelectChild" component={SelectChildScreen} />
-            <Stack.Screen name="Dashboard" component={DashboardScreen} />
-            <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="SubjectDetail" component={SubjectDetailScreen} />
-            <Stack.Screen name="Seguimiento" component={SeguimientoScreen} />
-            <Stack.Screen name="Horario" component={HorarioScreen} />
-            <Stack.Screen name="Mensajes" component={MensajesScreen} />
-            <Stack.Screen name="Notas" component={NotasScreen} />
-        </Stack.Navigator>
+        <SessionProvider>
+            <NotificacionesProvider>
+                <Stack.Navigator
+                    initialRouteName="Login"
+                    screenOptions={{
+                        headerShown: false,
+                    }}
+                >
+                    <Stack.Screen name="Login" component={LoginScreen} />
+                    <Stack.Screen name="SelectChild" component={SelectChildScreen} />
+                    <Stack.Screen name="Dashboard" component={DashboardScreen} />
+                    <Stack.Screen name="Home" component={HomeScreen} />
+                    <Stack.Screen name="SubjectDetail" component={SubjectDetailScreen} />
+                    <Stack.Screen name="Seguimiento" component={SeguimientoScreen} />
+                    <Stack.Screen name="Horario" component={HorarioScreen} />
+                    <Stack.Screen name="Mensajes" component={MensajesScreen} />
+                    <Stack.Screen name="Notas" component={NotasScreen} />
+                </Stack.Navigator>
+            </NotificacionesProvider>
+        </SessionProvider>
     );
 };
 

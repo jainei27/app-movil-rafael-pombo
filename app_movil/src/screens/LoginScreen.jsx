@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
     StyleSheet,
     View,
@@ -15,11 +15,16 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import CustomAlert from '../components/CustomAlert';
 import { useAuth } from '../hooks/useAuth';
+import { useSession } from '../context/SessionContext';
+import { useNotificaciones } from '../hooks/useNotificaciones';
 import colors from '../styles/colors';
 
 const LoginScreen = ({ navigation }) => {
+    const { resetSession } = useSession();
+    const { inicializarNotificacionesRelajado } = useNotificaciones();
     const {
         username,
         setUsername,
@@ -50,6 +55,16 @@ const LoginScreen = ({ navigation }) => {
             useNativeDriver: true,
         }).start();
     };
+
+    useEffect(() => {
+        inicializarNotificacionesRelajado();
+    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            resetSession();
+        }, [])
+    );
 
     return (
         <LinearGradient

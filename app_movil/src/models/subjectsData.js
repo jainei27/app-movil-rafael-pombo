@@ -17,7 +17,8 @@ export const subjects = [
         icon: "book-open-variant",
         grades: [
             { id: 201, activity: "Ensayo literario", grade: 4.5 },
-            { id: 202, activity: "Análisis gramatical", grade: 3.9 }
+            { id: 202, activity: "Análisis gramatical", grade: 3.9 },
+            { id: 203, activity: "Análisis de texto", grade: 1.0 }
         ]
     },
     {

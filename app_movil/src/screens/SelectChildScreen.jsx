@@ -67,7 +67,7 @@ const SelectChildScreen = ({ navigation }) => {
     const [logoutAlertVisible, setLogoutAlertVisible] = useState(false);
 
     const handleSelectChild = (child) => {
-        navigation.replace('Dashboard');
+        navigation.replace('Dashboard', { childId: child.id });
     };
 
     const handleLogoutConfirm = () => {

@@ -15,7 +15,7 @@ const GradeItem = ({ activity, grade }) => {
     } else if (numericGrade >= 3.0) {
         bgColor = '#FFFDE7';
         borderColor = '#FBC02D';
-        textColor = '#F57F17'; // a slightly darker yellow/orange for text readability
+        textColor = '#F57F17';
     }
 
     return (
